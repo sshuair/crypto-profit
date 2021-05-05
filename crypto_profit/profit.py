@@ -34,7 +34,7 @@ def calcuate_roi(client, trades):
     # **持仓收益率**=(当前成本价-持有成本价)/持有成本价
     holding_profit_percent = (current_price-holding_avg_price)/holding_avg_price*100
 
-    return {'name': trades[0]['symbol'], #名称
+    result = {'name': trades[0]['symbol'], #名称
             'holding_avg_price': holding_avg_price, #持仓成本价
             'current_price': current_price,  #当前价格
             'holding_amount': holding_amount, #持仓数量
@@ -43,6 +43,7 @@ def calcuate_roi(client, trades):
             'holding_profit':holding_profit,   #持仓收益
             'holding_profit_percent':holding_profit_percent #持仓收益率
             }
+    return result
 
 def parse_args():
     parser = argparse.ArgumentParser('caucuate the binance holding profit.')
@@ -60,7 +61,7 @@ def parse_args():
 def main():
     args = parse_args()
     client = Client(args.key, args.secret)
-    
+    rate = 6.475
     # 1. get all trade symbol
     all_trade_symbols = client.get_all_tickers()
     
@@ -75,13 +76,14 @@ def main():
             roi_result.append(roi_symbol)
     roi_result = sorted(roi_result, key=lambda k: k['holding_profit_percent'], reverse=True) 
     summary_table = PrettyTable()
-    summary_table.field_names = ['名称','持仓成本价($)','当前价格($)','持仓数量','持仓成本总价($)','当前总价($)','持仓收益($)','持仓收益率(%)']
+    summary_table.field_names = ['名称','持仓成本价($)','当前价格($)','持仓数量','持仓成本总价($)','当前总价($)','持仓收益($)','持仓收益率(%)', '当前总价(¥)', '持仓收益(¥)']
     for item in roi_result:
         summary_table.add_row([item['name'], 
                                 item['holding_avg_price'], item['current_price'], 
                                 item['holding_amount'], 
                                 item['holding_value'], item['current_value'],
-                                item['holding_profit'], item['holding_profit_percent']
+                                item['holding_profit'], item['holding_profit_percent'],
+                                item['current_value']*rate, item['holding_profit']*rate,
                                 ])
     print(summary_table)
 
