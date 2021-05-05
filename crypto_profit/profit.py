@@ -76,14 +76,15 @@ def main():
             roi_result.append(roi_symbol)
     roi_result = sorted(roi_result, key=lambda k: k['holding_profit_percent'], reverse=True) # desc sort by profit 
     summary_table = PrettyTable()
-    summary_table.field_names = ['名称','持仓成本价($)','当前价格($)','持仓数量','持仓成本总价($)','当前总价($)','持仓收益($)','持仓收益率(%)', '当前总价(¥)', '持仓收益(¥)']
+    summary_table.field_names = ['名称','持仓收益率(%)', '持仓收益($)','持仓收益(¥)', '持仓成本价($)','当前价格($)','持仓数量','持仓成本总价($)','当前总价($)', '当前总价(¥)', ]
     for item in roi_result:
         summary_table.add_row([item['name'], 
+                                item['holding_profit_percent'],
+                                item['holding_profit'], item['holding_profit']*rate,
                                 item['holding_avg_price'], item['current_price'], 
                                 item['holding_amount'], 
                                 item['holding_value'], item['current_value'],
-                                item['holding_profit'], item['holding_profit_percent'],
-                                item['current_value']*rate, item['holding_profit']*rate,
+                                item['current_value']*rate, 
                                 ])
     print(summary_table)
 
