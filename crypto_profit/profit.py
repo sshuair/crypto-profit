@@ -12,7 +12,7 @@ def calcuate_roi(client, trades):
         profit (float): total profit of this trade (in US Dollar)
         
     """
-    holding_avg_price = 0
+    holding_avg_price = 0 # 持仓均价
     holding_amount = 0 # 持仓总数量
     for idx, item in enumerate(trades):
         if item['isBuyer']:
@@ -20,8 +20,8 @@ def calcuate_roi(client, trades):
             holding_amount += float(item['qty'])
         else:
             holding_amount -= float(item['qty'])
-            holding_avg_price = holding_avg_price
-            
+            holding_avg_price = holding_avg_price #卖出持仓均价不变，这里要买入卖出的时间顺序进行计算，不然会错乱
+    
     # 持仓成本总金额=买入成本*买入数量-卖出成本*卖出数量
     holding_total = holding_amount*holding_avg_price
     
@@ -35,11 +35,11 @@ def calcuate_roi(client, trades):
     holding_profit_percent = (current_price-holding_avg_price)/holding_avg_price*100
 
     result = {'name': trades[0]['symbol'], #名称
-            'holding_avg_price': holding_avg_price, #持仓成本价
-            'current_price': current_price,  #当前价格
+            'holding_avg_price': holding_avg_price, #持仓成本均价
+            'current_price': current_price,  #当前最新价格
             'holding_amount': holding_amount, #持仓数量
             'holding_value': holding_avg_price*holding_amount, #持仓成本总价
-            'current_value': current_price*holding_amount, #当前总价
+            'current_value': current_price*holding_amount, #当前持仓总价
             'holding_profit':holding_profit,   #持仓收益
             'holding_profit_percent':holding_profit_percent #持仓收益率
             }
@@ -75,17 +75,19 @@ def main():
             roi_symbol = calcuate_roi(client, trades)
             roi_result.append(roi_symbol)
     roi_result = sorted(roi_result, key=lambda k: k['holding_profit_percent'], reverse=True) # desc sort by profit 
+    
     summary_table = PrettyTable()
     summary_table.field_names = ['名称','持仓收益率(%)', '持仓收益($)','持仓收益(¥)', '持仓成本价($)','当前价格($)','持仓数量','持仓成本总价($)','当前总价($)', '当前总价(¥)', ]
     for item in roi_result:
         summary_table.add_row([item['name'], 
-                                item['holding_profit_percent'],
-                                item['holding_profit'], item['holding_profit']*rate,
+                                round(item['holding_profit_percent'], 4),
+                                round(item['holding_profit'], 4), round(item['holding_profit']*rate, 4),
                                 item['holding_avg_price'], item['current_price'], 
                                 item['holding_amount'], 
-                                item['holding_value'], item['current_value'],
-                                item['current_value']*rate, 
+                                round(item['holding_value'],4), round(item['current_value'],4),
+                                round(item['current_value']*rate, 4),
                                 ])
+    summary_table.align = "r"
     print(summary_table)
 
 if __name__ == '__main__':
