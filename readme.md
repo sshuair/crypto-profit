@@ -4,22 +4,21 @@ This tool is used to calculate each cryptocurrency profit in Binace.
 
 ## requirements
 ```
+python-binance
 prettytable
-binance
 ```
 
 ## usage
+1. generate the binance `API key` and `API secret`.
+2. execuate the script.
+    ```
+    python crypto_profit/profit.py
 
-```
-python crypto_profit/profit.py
-
-optional arguments:
--h, --help            show this help message and exit
---key KEY             the binance api key.
---secret SECRET       the binace api secret
---symbols SYMBOLS [SYMBOLS ...]
-                        the symbols to calcuate
-```
+    optional arguments:
+    --key KEY             the binance api key.
+    --secret SECRET       the binace api secret
+    --symbols SYMBOLS [SYMBOLS ...] the symbols to calcuate
+    ```
 
 ## examples
 
